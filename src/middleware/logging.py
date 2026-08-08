@@ -1,6 +1,7 @@
 """Audit logging middleware for tracking all operations."""
 
 import logging
+import os
 from datetime import datetime
 from typing import Any, Dict, Optional
 
@@ -10,6 +11,10 @@ from src.config.database import get_db
 from src.models import AuditLog, Cluster
 
 logger = logging.getLogger(__name__)
+
+
+def _is_local_mcp_mode() -> bool:
+    return os.getenv("LOCAL_MCP_MODE", "").lower() in {"1", "true", "yes"}
 
 
 class AuditLogger:
@@ -22,7 +27,13 @@ class AuditLogger:
             cluster_name: Name of the cluster for audit logs
         """
         self.cluster_name = cluster_name
-        self.db = get_db()
+        self._db = None
+
+    @property
+    def db(self):
+        if self._db is None:
+            self._db = get_db()
+        return self._db
 
     async def get_cluster_id(self) -> Optional[int]:
         """Get cluster ID from cluster name.
@@ -60,6 +71,18 @@ class AuditLogger:
             error_message: Error message if operation failed
             user_id: User identifier (if available)
         """
+        # LocalMCP has no Postgres; keep a lightweight process log only.
+        if _is_local_mcp_mode():
+            logger.info(
+                "LocalMCP audit %s %s op=%s status=%s error=%s",
+                method,
+                path,
+                operation_id,
+                response_status,
+                error_message,
+            )
+            return
+
         try:
             cluster_id = await self.get_cluster_id()
 

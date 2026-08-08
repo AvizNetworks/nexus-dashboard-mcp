@@ -2,11 +2,17 @@
 
 import asyncio
 import logging
+import os
 from typing import Optional
 
+from src.config.settings import get_settings
 from src.services.security_service import SecurityConfigService
 
 logger = logging.getLogger(__name__)
+
+
+def _is_local_mcp_mode() -> bool:
+    return os.getenv("LOCAL_MCP_MODE", "").lower() in {"1", "true", "yes"}
 
 
 class SecurityMiddleware:
@@ -24,17 +30,30 @@ class SecurityMiddleware:
 
     def __init__(self):
         """Initialize security middleware."""
-        self.security_service = SecurityConfigService()
+        self._security_service: Optional[SecurityConfigService] = None
         self._edit_mode_cache: Optional[bool] = None
+
+    @property
+    def security_service(self) -> SecurityConfigService:
+        if self._security_service is None:
+            self._security_service = SecurityConfigService()
+        return self._security_service
 
     async def is_edit_mode_enabled(self) -> bool:
         """Check if edit mode is currently enabled.
 
-        Reads from database with caching for performance.
+        LocalMCP uses EDIT_MODE_ENABLED env (no Postgres).
+        Product mode reads from database with caching.
 
         Returns:
             True if edit mode enabled, False otherwise
         """
+        if _is_local_mcp_mode():
+            settings = get_settings()
+            env_val = os.getenv("EDIT_MODE_ENABLED")
+            if env_val is not None:
+                return env_val.lower() in {"1", "true", "yes"}
+            return bool(settings.edit_mode_enabled)
         return await self.security_service.is_edit_mode_enabled(use_cache=True)
 
     def is_write_operation(self, method: str) -> bool:

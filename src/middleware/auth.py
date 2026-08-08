@@ -1,13 +1,19 @@
 """Authentication middleware for Nexus Dashboard API requests."""
 
 import logging
+import os
 from typing import Any, Callable, Dict, Optional
 
+from src.config.settings import get_settings
 from src.core.api_registry import APIRegistry
 from src.services.credential_manager import CredentialManager
 from src.services.nexus_api import NexusAPIClient
 
 logger = logging.getLogger(__name__)
+
+
+def _is_local_mcp_mode() -> bool:
+    return os.getenv("LOCAL_MCP_MODE", "").lower() in {"1", "true", "yes"}
 
 
 class AuthMiddleware:
@@ -20,8 +26,48 @@ class AuthMiddleware:
             cluster_name: Name of the cluster to authenticate with
         """
         self.cluster_name = cluster_name
-        self.credential_manager = CredentialManager()
+        # Lazy: product mode uses DB-backed credentials; LocalMCP uses env.
+        self._credential_manager: Optional[CredentialManager] = None
         self.api_client: Optional[NexusAPIClient] = None
+
+    @property
+    def credential_manager(self) -> CredentialManager:
+        if self._credential_manager is None:
+            self._credential_manager = CredentialManager()
+        return self._credential_manager
+
+    def _client_from_env(self) -> Optional[NexusAPIClient]:
+        """Build a client from LocalMCP/env credentials when available."""
+        if not _is_local_mcp_mode():
+            return None
+
+        settings = get_settings()
+        base_url = (
+            os.getenv("NEXUS_CLUSTER_URL")
+            or os.getenv("NEXUS_BASE_URL")
+            or os.getenv("NEXUS_URL")
+            or settings.nexus_cluster_url
+        )
+        api_token = os.getenv("NEXUS_API_TOKEN", "").strip()
+        username = os.getenv("NEXUS_USERNAME", settings.nexus_username)
+        password = os.getenv("NEXUS_PASSWORD", settings.nexus_password)
+        verify_ssl = str(
+            os.getenv("NEXUS_VERIFY_SSL", str(settings.nexus_verify_ssl))
+        ).lower() in {"1", "true", "yes"}
+
+        if not base_url:
+            return None
+        if not api_token and not (username and password):
+            return None
+
+        logger.info("Using LocalMCP environment credentials for Nexus Dashboard")
+        return NexusAPIClient(
+            base_url=base_url,
+            username=username or "",
+            password=password or "",
+            verify_ssl=verify_ssl,
+            api_token=api_token or None,
+        )
 
     async def get_api_client(self) -> NexusAPIClient:
         """Get or create authenticated API client.
@@ -35,7 +81,19 @@ class AuthMiddleware:
         if self.api_client is not None:
             return self.api_client
 
-        # Retrieve credentials from database
+        # LocalMCP path: prefer connector-injected env credentials (no Postgres).
+        env_client = self._client_from_env()
+        if env_client is not None:
+            self.api_client = env_client
+            authenticated = await self.api_client.authenticate()
+            if not authenticated:
+                raise RuntimeError(
+                    "Failed to authenticate with Nexus Dashboard using LocalMCP env credentials"
+                )
+            logger.info("Successfully authenticated via LocalMCP environment credentials")
+            return self.api_client
+
+        # Retrieve credentials from database (full product mode)
         credentials = None
         if self.cluster_name == "default":
             # If using default, try to get the first active cluster
@@ -120,31 +178,23 @@ class AuthMiddleware:
             return {"data": response.text, "status_code": response.status_code}
 
         except Exception as e:
-            logger.error(f"API request failed: {method} {path} - {e}")
-            raise RuntimeError(f"API request failed: {e}")
+            logger.error(f"API request failed: {e}")
+            raise RuntimeError(f"API request failed: {e}") from e
 
     async def close(self):
-        """Close API client connection."""
+        """Close API client connections."""
         if self.api_client:
             await self.api_client.close()
             self.api_client = None
 
     def __call__(self, func: Callable) -> Callable:
-        """Decorator for adding authentication to functions.
+        """Decorator for adding authentication to functions."""
 
-        Args:
-            func: Function to wrap with authentication
-
-        Returns:
-            Wrapped function with authentication
-        """
         async def wrapper(*args, **kwargs):
             try:
-                # Ensure we're authenticated before calling function
                 await self.get_api_client()
                 return await func(*args, **kwargs)
             finally:
-                # Clean up if needed
                 pass
 
         return wrapper

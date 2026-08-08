@@ -144,6 +144,11 @@ async def validate_token(authorization: Optional[str]) -> AuthResult:
         AuthResult with validation status and user context
     """
     expected_token = os.environ.get("MCP_API_TOKEN")
+    local_mcp_mode = os.environ.get("LOCAL_MCP_MODE", "").lower() in {
+        "1",
+        "true",
+        "yes",
+    }
 
     # Extract token from header
     token = None
@@ -152,6 +157,16 @@ async def validate_token(authorization: Optional[str]) -> AuthResult:
             token = authorization[7:]
         else:
             token = authorization
+
+    # LocalMCP open access: NCP-managed containers on the private Docker network
+    # can opt into token-less access when MCP_API_TOKEN is unset.
+    if local_mcp_mode and not expected_token and not token:
+        logger.debug("Authenticated via LocalMCP open access (no MCP_API_TOKEN set)")
+        return AuthResult(
+            is_valid=True,
+            has_edit_mode=True,
+            is_legacy_token=True,
+        )
 
     # Case 1: No token provided - always deny access
     if not token:
