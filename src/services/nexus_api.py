@@ -17,9 +17,10 @@ class NexusAPIClient:
     def __init__(
         self,
         base_url: str,
-        username: str,
-        password: str,
+        username: str = "",
+        password: str = "",
         verify_ssl: bool = False,
+        api_token: Optional[str] = None,
     ):
         """Initialize Nexus Dashboard API client.
 
@@ -28,15 +29,17 @@ class NexusAPIClient:
             username: Username for authentication
             password: Password for authentication
             verify_ssl: Whether to verify SSL certificates
+            api_token: Optional API token (skips username/password login)
         """
         self.base_url = base_url.rstrip("/")
         self.username = username
         self.password = password
         self.verify_ssl = verify_ssl
+        self.api_token = api_token
         self.settings = get_settings()
 
         # Session management
-        self.access_token: Optional[str] = None
+        self.access_token: Optional[str] = api_token
         self.cookies: Optional[dict] = None
 
         # HTTP client configuration
@@ -47,11 +50,16 @@ class NexusAPIClient:
         )
 
     async def authenticate(self) -> bool:
-        """Authenticate with Nexus Dashboard using Basic Auth.
+        """Authenticate with Nexus Dashboard using API token or login.
 
         Returns:
             True if authentication successful, False otherwise
         """
+        if self.api_token:
+            self.access_token = self.api_token
+            logger.info("Using provided Nexus Dashboard API token")
+            return True
+
         try:
             # Nexus Dashboard typically uses /login endpoint with Basic Auth
             login_url = urljoin(self.base_url, "/login")
