@@ -17813,6 +17813,1095 @@
           "Fabric Management"
         ]
       }
+    },
+    "/fabrics/{fabricName}/configuration/{switchId}": {
+      "get": {
+        "description": "Retrieve the configuration data for a specific switch in JSON format for display.",
+        "operationId": "getConfigurationViewBySwitchId",
+        "parameters": [
+          {
+            "name": "clusterName",
+            "description": "Name of the target Nexus Dashboard cluster to execute this API, in a multi-cluster deployment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Name of the target Nexus Dashboard cluster to execute this API, in a multi-cluster deployment"
+            }
+          },
+          {
+            "description": "Name of the fabric",
+            "example": "fabric1",
+            "in": "path",
+            "name": "fabricName",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 1
+            }
+          },
+          {
+            "description": "For ACI fabrics, the node ID. For NX-OS fabrics, the switch serial number.",
+            "example": "FDO21332E6X, 101",
+            "in": "path",
+            "name": "switchId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "config": "Configuration data for switch"
+                },
+                "schema": {
+                  "description": "a JSON representation of the configuration data for devices",
+                  "properties": {
+                    "config": {
+                      "description": "the configuration data in JSON format for the switch",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Bad Request",
+                  "description": "The server could not understand the request due to incorrect syntax.",
+                  "code": 400
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Unauthorized",
+                  "description": "Indicates that the request requires user authentication information.",
+                  "code": 401
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "description": "The client does not have access rights to the content.",
+                  "code": 403
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Not Found",
+                  "description": "The server cannot find the requested resource.",
+                  "code": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Internal Server Error",
+                  "description": "The server encountered an unexpected condition that prevented it from fulfilling the request.",
+                  "code": 500
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "super-admin",
+              "fabric-admin",
+              "support-engineer",
+              "designer",
+              "approver",
+              "device-upg-admin"
+            ]
+          }
+        ],
+        "summary": "Get switch configuration data",
+        "tags": [
+          "Fabric Management"
+        ],
+        "x-source": "Cisco Nexus Dashboard Manage API 1.2.224 (ND 4.2.1+), added for NCP-4078"
+      }
+    },
+    "/fabrics/{fabricName}/configurationFile/{switchId}": {
+      "get": {
+        "description": "Get the Configuration data in file format",
+        "operationId": "getSwitchConfigurationFile",
+        "parameters": [
+          {
+            "name": "clusterName",
+            "description": "Name of the target Nexus Dashboard cluster to execute this API, in a multi-cluster deployment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Name of the target Nexus Dashboard cluster to execute this API, in a multi-cluster deployment"
+            }
+          },
+          {
+            "description": "Name of the fabric",
+            "example": "fabric1",
+            "in": "path",
+            "name": "fabricName",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 64,
+              "minLength": 1
+            }
+          },
+          {
+            "description": "For ACI fabrics, the node ID. For NX-OS fabrics, the switch serial number.",
+            "example": "FDO21332E6X, 101",
+            "in": "path",
+            "name": "switchId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/octet-stream": {
+                "example": {
+                  "file": "H4sIAPhsq2YAA0tKTM4uLdBPLErOyCxL1ctNLUlMSSxJZKAmMAACMxMTMA0E6LSBkaE5g6GJmamR mamZiaERg4GhiaGpOYOCAVVdgQOUFpckFikoMBTl55fgU0dIfoiC4MScktSU+PjzTooXZvD0RqWK\n",
+                  "name": "MyFabric-leaf-1.cfg"
+                },
+                "schema": {
+                  "description": "a schema file, either a single file or a archive (e.g. a .zip)",
+                  "properties": {
+                    "file": {
+                      "description": "the file itself",
+                      "format": "byte",
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "filename",
+                      "example": "yourFile.txt",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "file"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Bad Request",
+                  "description": "The server could not understand the request due to incorrect syntax.",
+                  "code": 400
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Unauthorized",
+                  "description": "Indicates that the request requires user authentication information.",
+                  "code": 401
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Forbidden",
+                  "description": "The client does not have access rights to the content.",
+                  "code": 403
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Not Found",
+                  "description": "The server cannot find the requested resource.",
+                  "code": 404
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "headers": {
+              "Date": {
+                "description": "Date",
+                "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                "schema": {
+                  "type": "string",
+                  "example": "Tue, 15 Nov 1994 08:12:31 GMT",
+                  "nullable": true
+                }
+              },
+              "Cache-Control": {
+                "description": "Cache-Control",
+                "example": "no-cache, no-store, must-revalidate",
+                "schema": {
+                  "type": "string",
+                  "default": "no-cache",
+                  "nullable": true
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error object",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "description": "The message that can be displayed to the user",
+                      "type": "string"
+                    },
+                    "description": {
+                      "description": "A detailed description or suggestions on how to correct the error",
+                      "type": "string"
+                    },
+                    "code": {
+                      "description": "The error code",
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "description": "An array of errors",
+                      "type": "array",
+                      "items": {
+                        "description": "Sub error object",
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "description": "The message that can be displayed to the user",
+                            "type": "string"
+                          },
+                          "description": {
+                            "description": "A detailed description or suggestions on how to correct the error",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The error code",
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "message",
+                          "code",
+                          "description"
+                        ],
+                        "example": {
+                          "message": "Invalid email",
+                          "description": "The email you provided is invalid",
+                          "code": 4066
+                        }
+                      }
+                    }
+                  },
+                  "example": {
+                    "message": "Unauthorized",
+                    "description": "You are not authorized to access this resource",
+                    "code": 4065
+                  },
+                  "required": [
+                    "message",
+                    "code",
+                    "description"
+                  ]
+                },
+                "example": {
+                  "message": "Internal Server Error",
+                  "description": "The server encountered an unexpected condition that prevented it from fulfilling the request.",
+                  "code": 500
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2": [
+              "super-admin",
+              "fabric-admin",
+              "support-engineer",
+              "designer",
+              "approver",
+              "device-upg-admin"
+            ]
+          }
+        ],
+        "summary": "Get the Configuration data in file format",
+        "tags": [
+          "Fabric Management"
+        ],
+        "x-source": "Cisco Nexus Dashboard Manage API 1.2.224 (ND 4.2.1+), added for NCP-4078"
+      }
     }
   },
   "components": {
