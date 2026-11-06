@@ -334,6 +334,7 @@ class NexusDashboardMCP:
                     method=method,
                     operation_id=operation_id,
                     path=path,
+                    body=arguments.get("body"),
                 )
             except PermissionError as e:
                 error_msg = str(e)
