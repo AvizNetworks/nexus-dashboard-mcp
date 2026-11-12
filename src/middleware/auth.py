@@ -135,6 +135,7 @@ class AuthMiddleware:
         api_name: str = "manage",
         params: Optional[Dict[str, Any]] = None,
         json_data: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, str]] = None,
     ) -> Dict[str, Any]:
         """Execute authenticated API request.
 
@@ -144,6 +145,7 @@ class AuthMiddleware:
             api_name: Name of the API (manage, analyze, infra, onemanage)
             params: Query parameters
             json_data: JSON request body
+            headers: Extra HTTP headers (OpenAPI header parameters)
 
         Returns:
             Response data as dictionary
@@ -168,6 +170,7 @@ class AuthMiddleware:
                 path=path,
                 params=params,
                 json_data=json_data,
+                headers=headers,
             )
 
             # Return JSON response

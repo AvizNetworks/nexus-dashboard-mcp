@@ -248,6 +248,14 @@ class NexusDashboardMCP:
                 }
                 if param_required:
                     required.append(param_name)
+            elif param_name and param_in == "header":
+                # Header parameters go out as HTTP headers; a required one with a default is filled in.
+                properties[param_name] = {
+                    "type": param_schema.get("type", "string"),
+                    "description": (param_desc or f"Header: {param_name}") + " (sent as an HTTP header)"
+                }
+                if param_required and "default" not in param_schema:
+                    required.append(param_name)
 
         # Add body parameter if request body is defined
         if operation.get("requestBody"):
@@ -325,8 +333,18 @@ class NexusDashboardMCP:
                         })
                     )]
 
-            # Separate path params from query params for the request
-            query_params = {k: v for k, v in arguments.items() if k not in path_params and k != "body"}
+            # Header parameters from the spec go out as headers (default filled in), the rest as query params
+            header_params = {}
+            for param in operation.get("parameters", []):
+                if param.get("in") != "header" or not param.get("name"):
+                    continue
+                value = arguments.get(param["name"], (param.get("schema") or {}).get("default"))
+                if value is not None:
+                    header_params[param["name"]] = str(value)
+            query_params = {
+                k: v for k, v in arguments.items()
+                if k not in path_params and k != "body" and k not in header_params
+            }
 
             # Check security
             try:
@@ -368,6 +386,7 @@ class NexusDashboardMCP:
                     api_name=api_name,
                     params=query_params if query_params else None,
                     json_data=arguments.get("body"),
+                    headers=header_params or None,
                 )
 
                 # Log success
