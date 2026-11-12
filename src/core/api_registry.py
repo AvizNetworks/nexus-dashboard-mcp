@@ -53,6 +53,14 @@ class APIRegistry:
             description="Multi-site orchestration and management",
             enabled=True
         ),
+        "ndfc": APIDefinition(
+            name="ndfc",
+            display_name="Nexus Dashboard Fabric Controller (legacy LAN)",
+            spec_file="ndfc_legacy.json",
+            base_path="/appcenter/cisco/ndfc/api/v1",
+            description="Legacy NDFC reads for ND before the Manage API: switch inventory and show commands",
+            enabled=True
+        ),
         # Note: orchestrator.json currently has parsing issues
         # "orchestrator": APIDefinition(
         #     name="orchestrator",
