@@ -28,6 +28,11 @@ class SecurityMiddleware:
     # Read-only operations (always allowed)
     READ_METHODS = {"GET", "HEAD", "OPTIONS"}
 
+    # POST operations that only run show commands: allowed in read-only mode for the commands below only.
+    SHOW_ONLY_OPERATIONS = {"executeShowTemplate": "cliCommandList", "executeSwitchShowCommands": "commands"}
+    # Exact commands, compared with spaces collapsed; a prefix rule let "show run > bootflash:x" write to flash.
+    SHOW_ONLY_COMMANDS = {"show running-config", "show version"}
+
     def __init__(self):
         """Initialize security middleware."""
         self._security_service: Optional[SecurityConfigService] = None
@@ -78,11 +83,23 @@ class SecurityMiddleware:
         """
         return method.upper() in self.READ_METHODS
 
+    @classmethod
+    def is_show_only(cls, operation_id: Optional[str], body) -> bool:
+        """Whether a show-command POST carries only allowlisted commands (anything else stays blocked)."""
+        field = cls.SHOW_ONLY_OPERATIONS.get(operation_id or "")
+        commands = body.get(field) if field and isinstance(body, dict) else None
+        return bool(commands) and isinstance(commands, list) and all(
+            isinstance(c, str) and " ".join(c.lower().split()) in cls.SHOW_ONLY_COMMANDS
+            and c.isprintable()
+            for c in commands
+        )
+
     async def check_operation_allowed(
         self,
         method: str,
         operation_id: Optional[str] = None,
         path: Optional[str] = None,
+        body=None,
     ) -> tuple[bool, Optional[str]]:
         """Check if an operation is allowed based on security settings.
 
@@ -98,6 +115,10 @@ class SecurityMiddleware:
 
         # Read operations are always allowed
         if self.is_read_operation(method_upper):
+            return True, None
+
+        if method_upper == "POST" and self.is_show_only(operation_id, body):
+            logger.info(f"Allowing show-only POST {operation_id} in read-only mode")
             return True, None
 
         # Write operations require edit mode
@@ -133,6 +154,7 @@ class SecurityMiddleware:
         method: str,
         operation_id: Optional[str] = None,
         path: Optional[str] = None,
+        body=None,
     ):
         """Enforce security policy for an operation.
 
@@ -145,7 +167,7 @@ class SecurityMiddleware:
             PermissionError: If operation is not allowed
         """
         allowed, error_message = await self.check_operation_allowed(
-            method, operation_id, path
+            method, operation_id, path, body
         )
 
         if not allowed:

@@ -67,6 +67,7 @@ async def sync_api_endpoints():
         "analyze": "analyze.json",
         "infra": "infra.json",
         "onemanage": "one_mange.json",
+        "ndfc": "ndfc_legacy.json",
     }
 
     specs_dir = Path("openapi_specs")

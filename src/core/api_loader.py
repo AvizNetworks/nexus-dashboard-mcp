@@ -95,6 +95,14 @@ class APILoader:
             List of operation dictionaries with method, path, operation_id, summary
         """
         operations = []
+        components = spec.get("components", {}).get("parameters", {})
+
+        def resolve(param):
+            # Cisco specs give most parameters as "$ref" (e.g. forceShowRun); inline them so tools list them.
+            ref = param.get("$ref", "") if isinstance(param, dict) else ""
+            if ref.startswith("#/components/parameters/"):
+                return {**components.get(ref.rsplit("/", 1)[-1], {}), **{k: v for k, v in param.items() if k != "$ref"}}
+            return param
 
         paths = spec.get("paths", {})
         for path, path_item in paths.items():
@@ -108,7 +116,7 @@ class APILoader:
                         "summary": operation.get("summary", ""),
                         "description": operation.get("description", ""),
                         "tags": operation.get("tags", []),
-                        "parameters": operation.get("parameters", []),
+                        "parameters": [resolve(p) for p in operation.get("parameters", [])],
                         "requestBody": operation.get("requestBody"),
                     })
 

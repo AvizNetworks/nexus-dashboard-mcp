@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Nexus Dashboard Fabric Controller LAN (legacy, read subset)",
+    "version": "12.5.0-ncp4078"
+  },
+  "paths": {
+    "/lan-fabric/rest/inventory/allswitches": {
+      "get": {
+        "tags": [
+          "Fabric Inventory"
+        ],
+        "summary": "List all the Devices in NDFC",
+        "description": "List all the Devices in NDFC. ",
+        "operationId": "getAllSwitches",
+        "responses": {
+          "200": {
+            "description": "Successfully list all the Devices"
+          },
+          "400": {
+            "description": "Invalid query params"
+          },
+          "500": {
+            "description": "Other exceptions"
+          }
+        },
+        "x-source": "Cisco NDFC LAN API 12.5.0 (legacy, ND before 4.1 and later), added for NCP-4078"
+      }
+    },
+    "/configtemplate/rest/config/templates/execute/show": {
+      "post": {
+        "operationId": "executeShowTemplate",
+        "summary": "Run show commands on a switch (show template)",
+        "description": "Runs show commands on one switch through ND and returns their output; what the ND UI's Inventory > Actions > Maintenance > Show commands calls. Only 'show ...' commands are allowed.",
+        "x-source": "ND 4.0.1i UI request (not in Cisco's published LAN spec), verified live 2026-11-05 for NCP-4078",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "cliCommandList",
+                  "ipAddress",
+                  "switchDbId"
+                ],
+                "properties": {
+                  "cliCommandList": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Show commands, e.g. [\"show running-config\"]"
+                  },
+                  "ipAddress": {
+                    "type": "string",
+                    "description": "Switch management IP"
+                  },
+                  "switchDbId": {
+                    "type": "integer",
+                    "description": "The switch's switchDbID from getAllSwitches"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "One entry per command: {command, response, bSuccess, errorResp}"
+          }
+        }
+      }
+    }
+  }
+}
